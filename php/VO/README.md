@@ -7,9 +7,9 @@ Create one VO for each database table.  You can also create VOs for complex Left
 (You'll need to modify AMFPHP to parse the namespace correctly or create a directory structure to match the value in $_explicitType.)
 
 
-'''php
+```php
 
-<&lt;php
+&lt;php
 class ClassName extends DatabaseTemplate {
 
 	var $_explicitType = "com.myNamespace.VO.ClassName";	// a Flex/Actionscript thing
@@ -54,4 +54,4 @@ class ClassName extends DatabaseTemplate {
 	 */
 }
 
-'''
+```
