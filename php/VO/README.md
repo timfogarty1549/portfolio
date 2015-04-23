@@ -8,7 +8,8 @@ Create one VO for each database table.  You can also create VOs for complex Left
 
 
 '''php
-<?php
+
+<&lt;php
 class ClassName extends DatabaseTemplate {
 
 	var $_explicitType = "com.myNamespace.VO.ClassName";	// a Flex/Actionscript thing
@@ -52,4 +53,5 @@ class ClassName extends DatabaseTemplate {
 	 * add your specialized methods here, or use the standars ones in DatabaseTemplate
 	 */
 }
+
 '''
