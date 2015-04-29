@@ -7,6 +7,8 @@ require_once 'functions.php';
 require_once 'JSONSlim.php';
 
 use Slim\Extras\Log\DateTimeFileWriter;
+use \Slim\Middleware\HttpBasicAuthentication\AuthenticatorInterface;
+
 $config = array (
 		'Slim' => array (
 				'debug' => true,
@@ -36,8 +38,19 @@ $app->notFound ( function () use($app) {
 	print_r ( $_SERVER );
 } );
 
-if (! empty ( $_POST ))
-	logError ( $_POST );
+
+/**
+ * see http://www.appelsiini.net/projects/slim-jwt-auth for other types of authorization
+ */
+$app->add ( new \Slim\Middleware\HttpBasicAuthentication ( [ 
+		"path" => "/admin",
+		"realm" => "Protected",
+		"authenticator" => new UserAuthenticator () 
+] ) );
+
+/**
+ * just a few restful calls.  All the POSTS and DELETES are in admin.php
+ */
 
 $app->get ( "/mags", function () use($app) {
 	$app->render ( 200, Magazine::fetchSummary () );
@@ -68,3 +81,9 @@ $app->post ( "/login", function () use($app) {
 } );
 
 $app->run ();
+
+class UserAuthenticator implements AuthenticatorInterface {
+	public function authenticate($user, $pass) {
+		return Users::validate( $user, $pass );
+	}
+}
