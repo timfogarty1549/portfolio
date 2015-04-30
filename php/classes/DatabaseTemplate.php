@@ -7,9 +7,16 @@ abstract class DatabaseTemplate {
 	 * static protected $CLASS_NAME = '';
 	 * static public $fields = array();
 	 * static protected $keys = array();
+	 * 
+	 * note the use of LATE STATIC BINDING   http://php.net/language.oop5.late-static-bindings
 	 */
 	protected $_key_pair;
 	public $_selected;
+	
+	/**
+	 * 
+	 * @param string $data Optional associative array used to populate fields in the class
+	 */
 	public function __construct($data = null) {
 		if ($data != null) {
 			foreach ( static::$fields as $field ) {
@@ -21,20 +28,21 @@ abstract class DatabaseTemplate {
 	}
 	
 	/**
-	 *
-	 * @param string $string        	
+	 * Create an object of the child class from a JSON string
+	 * 
+	 * @param string $string        
+	 * 	
 	 * @return object of child class
 	 */
-	static public function fromJSON($string) {
+	static public function fromJSON( $jsonString ) {
 		$obj = new static::$CLASS_NAME ();
-		$obj->setJSON ( json_decode ( $json, true ) );
+		$obj->setJSON ( json_decode ( $jsonString, true ) );
 		return $obj;
 	}
 	
 	/**
 	 *
-	 * @param
-	 *        	assoc array $data
+	 * @param assoc array $data
 	 * @param object $obj        	
 	 */
 	private function setJSON($data, $obj = null) {
@@ -51,11 +59,13 @@ abstract class DatabaseTemplate {
 	}
 	
 	/**
+	 * 
 	 *
-	 * @param variable $values
+	 * @param string|regular array|associativeArray $values
 	 *        	string - single value to be combined with single key
 	 *        	regular array - keys to be combined with keys
 	 *        	associative array - keys to use as is
+	 *        
 	 * @return NULL multitype:
 	 */
 	static public function buildKeyPair($values) {
@@ -74,6 +84,11 @@ abstract class DatabaseTemplate {
 			$key_pair = array_combine ( static::$keys, $values );
 		return $key_pair;
 	}
+	
+	/**
+	 * 
+	 * @return unknown|Ambigous <multitype:, multitype:NULL >
+	 */
 	static public function fetchRecord() { // $key0, $key1, ...
 		$args = func_get_args ();
 		if ($args == null || count ( $args ) == 0) {
@@ -88,28 +103,71 @@ abstract class DatabaseTemplate {
 			return $obj;
 		}
 	}
+	/**
+	 * 
+	 * @return multitype:boolean number
+	 */
 	public function createRec() {
 		return static::createRecord ( ( array ) $this, static::$_encode_exclude );
 	}
+	
+	/**
+	 * 
+	 * @param associativeArray $data
+	 * @param array $exclude
+	 * @param boolean $ignore
+	 * @return multitype:boolean number
+	 */
 	static public function createRecord($data, $exclude = null, $ignore = false) {
 		return MySql::newRecord ( static::$TABLE_NAME, static::$fields, $data, $exclude, $ignore ? static::$keys [0] : null );
 	}
+	
+	/**
+	 * 
+	 * @return Ambigous <string, boolean>
+	 */
 	public function updateRec() {
 		return MySql::updateRecord ( static::$TABLE_NAME, static::$fields, static::$keys, $this, static::$_encode_exclude );
 	}
+	
+	/**
+	 * 
+	 * @param array $data
+	 * @return Ambigous <string, boolean>
+	 */
 	static public function updateRecord($data = null) {
 		if ($data == null)
 			$data = static::$this;
 		return MySql::updateRecord ( static::$TABLE_NAME, static::$fields, static::$keys, $data, static::$_encode_exclude );
 	}
+	
+	/**
+	 * 
+	 * @param string|array|associativeArray $key_values
+	 * @param array $data
+	 * @return Ambigous <string, boolean>
+	 */
 	static public function updateFields($key_values, $data) {
 		$key_pair = self::buildKeyPair ( $key_values );
 		return MySql::updateRecord ( static::$TABLE_NAME, static::$fields, $key_pair, $data );
 	}
+	
+	/**
+	 * 
+	 * @param unknown $key_values
+	 * @param unknown $field
+	 * @param unknown $value
+	 * @return boolean
+	 */
 	static public function updateField($key_values, $field, $value) {
 		$key_pair = self::buildKeyPair ( $key_values );
 		return MySql::updateField ( static::$TABLE_NAME, $key_pair, $field, $value );
 	}
+	
+	/**
+	 * 
+	 * @return boolean|string
+	 */
 	static public function deleteRecord() {
 		$values = func_get_args ();
 		if (count ( $values ) == count ( static::$keys )) {
@@ -122,10 +180,22 @@ abstract class DatabaseTemplate {
 			return "Key mismatch";
 		}
 	}
+	
+	/**
+	 * 
+	 * @param string $keys
+	 * @return Ambigous <boolean, unknown>
+	 */
 	static public function fetchCount($keys = null) {
 		$key_pair = self::buildKeyPair ( $keys );
 		return MySql::fetchCount ( static::$TABLE_NAME, $key_pair );
 	}
+	
+	/**
+	 * 
+	 * @param string $keys
+	 * @return boolean
+	 */
 	static public function recordExists($keys = null) {
 		$key_pair = self::buildKeyPair ( $keys );
 		return MySql::recordExists ( static::$TABLE_NAME, $key_pair );
@@ -173,9 +243,9 @@ abstract class DatabaseTemplate {
 	 *        	= null
 	 * @param string $fields
 	 *        	= *
-	 * @param number $offset
+	 * @param integer $offset
 	 *        	= 0
-	 * @param unknown $limit
+	 * @param integer $limit
 	 *        	= MySql::LIMIT
 	 * @return Ambigous <multitype:NULL, multitype:NULL >
 	 */

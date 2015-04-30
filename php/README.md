@@ -24,9 +24,16 @@ $app->get ( "/users", function () use($app) {
 $app->post('/user', function () use ($app) {
     $json = $app->request->getBody();
     $data = json_decode($json, true);
-    $status = User::updateRecord( $data );
+    $status = User::updateRecord( $data );	// only fields in $data get updated
     $app->render ( 200, $status );
 });
+
+$app->post('/userFull', function () use ($app) {
+	$user = User::fromJSON( $app->request->getBody() );
+	$status = $user->updateRec();		// all fields will be overwritten
+    $app->render ( 200, $status );
+});
+
 
 $app->get( "/user/:user_id/:field/:value", function( $user_id, $field, $value ) use($app) {
 	$status = User::updateField( $user_id, $field, $value );

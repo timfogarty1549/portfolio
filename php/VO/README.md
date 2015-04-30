@@ -1,10 +1,10 @@
-# VOs (Value Object)
+### VOs (Value Object)
 
 In Flex/Actionscript, classes in Actionscript can be mapped to a Remote Object through software such as AMFPHP.  For browser side Javascript AJAX calls, the class is transmitted via JSON.
 
 Create one VO for each database table.  You can also create VOs for complex Left Joins, however updates can be done only on $TABLE_NAME.
 
-(You'll need to modify AMFPHP to parse the namespace correctly or create a directory structure to match the value in $_explicitType.)
+For AMFPHP, you'll need to modify gateway.php to parse the namespace correctly, or create a directory structure to match the value in $_explicitType. (/com/myNamespace/VO/)
 
 
 ```php
@@ -28,7 +28,7 @@ class ClassName extends DatabaseTemplate {
 	);
 	
 	protected static $keys = array (
-			'name_of_primary_key' 
+			'name_of_primary_key' 			// may be a list of fields if that makes up the unique primary key
 	);
 	
 	/**
