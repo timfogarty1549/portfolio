@@ -1,4 +1,3 @@
-## php
 For most project that I've worked on, I do my best to not use the PHP script to create or manipulate HTML, that is to create the view.  Flex/Actionscript applications are already compiled, so there is not much the server could send anyway.  Angular applications have their own templating system that they can manipulate in javascript. Best practices are that the server side PHP code is used only to send and receive Remote Objects, to extract data out of a database or other system, wrap it in some protocol (such as JSON) and send it to the front end UI. Or receive an object from the server and pass it on to the database.  I use AMFPHP as the framework for Flex/Actionscript projects and SLIM for Angular. Both are used to route incoming URLs (RESTful or not) and return Remote Objects.  With AMFPHP and Flex, a server side PHP Class maps to a browser side Actionscript Class.  Create an object on one side and it shows up as that same object on the other. With SLIM, an object is sent out as JSON, which the Javascript can parse.  
 
 The PHP standard API mysqli has the method fetch_object which allows you to pass it the name of a class.  The fields of the class are automatically assigned the values of the fields returned from the query, eliminating the need for a whole bunch of assignment statements placing the results of the query into the object being sent to the browser. With this in mind, I create a class, Mysql (perhaps I could have named it better) to perform all the standard CRUD functions on objects, and an abstract class, DatabaseTemplate, to define those objects.
@@ -92,7 +91,7 @@ class JSONSlim extends Slim {
 }
 ````
 
-Then for each object that you want to send to or receive from the browser, create a class that extends DatabaseTemplate.  A class may represent a row in the database, or a row returned from a query with many joins.
+Then for each object that you want to send to or receive from the browser, create a class that extends DatabaseTemplate.  A class may represent a row in the database, or a row returned from a query with many joins.  I store these classes in the VO directory.
 
 ####User class
 
@@ -127,5 +126,5 @@ class User extends DatabaseTemplate {
 }
 ````
 
-This is all that is needed for a complete RESTful script. Making the connection to the database, building the queries and fetching the objects are all contained within DatabaseTemplate.php and Mysql.php.
+This is all that is needed for a complete RESTful script. Making the connection to the database, building the queries and fetching the objects are all contained within DatabaseTemplate.php and Mysql.php.  Or you add methods to fetch objects or list of objects from multiple tables using JOINs. Or perform some post processing on the objects returned fom the database before sending it to the browser.
 
